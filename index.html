@@ -60,5 +60,13 @@
     System.import('./index.js').catch(function(err) { console.error(err); })
 </script>
 
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function () {});
+  });
+}
+</script>
 </body>
 </html>
