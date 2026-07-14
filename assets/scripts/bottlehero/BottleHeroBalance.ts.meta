@@ -1,0 +1,13 @@
+{
+  "ver": "4.0.24",
+  "importer": "typescript",
+  "imported": true,
+  "uuid": "e57d09c6-185d-484f-8163-3aff6bcb9e52",
+  "files": [],
+  "subMetas": {},
+  "userData": {
+    "moduleId": "project:///assets/scripts/bottlehero/BottleHeroBalance.js",
+    "importerSettings": 7,
+    "simulateGlobals": []
+  }
+}

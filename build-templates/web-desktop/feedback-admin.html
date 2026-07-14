@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bottlehero 反馈统计</title>
+  <link rel="stylesheet" href="./feedback.css">
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <h1>Bottlehero 反馈统计</h1>
+      <p>内部测试统计页。页面会自动读取线上问卷提交数据。</p>
+      <div class="actions">
+        <button id="refreshButton" type="button">刷新数据</button>
+        <a class="link-button secondary" href="./feedback.html">打开问卷</a>
+        <a class="link-button secondary" href="./">返回游戏</a>
+      </div>
+      <div id="status" class="status" role="status"></div>
+    </section>
+
+    <section class="panel">
+      <h2>关键判断</h2>
+      <div id="statsGrid" class="stats-grid"></div>
+    </section>
+
+    <section class="panel">
+      <h2>好玩程度 / 复玩意愿</h2>
+      <div id="funBars"></div>
+      <div id="replayBars"></div>
+    </section>
+
+    <section class="panel">
+      <h2>画面风格偏好</h2>
+      <div id="artImageStats" class="art-stats-grid"></div>
+    </section>
+
+    <section class="panel">
+      <h2>喜欢点 / 问题点</h2>
+      <div id="favoriteBars"></div>
+      <div id="painBars"></div>
+    </section>
+
+    <section class="panel">
+      <h2>用户类型</h2>
+      <div id="segmentBars"></div>
+      <div id="frequencyBars"></div>
+    </section>
+
+    <section class="panel">
+      <h2>最近反馈</h2>
+      <div id="recentTable"></div>
+    </section>
+  </main>
+  <script type="module" src="./feedback-admin.js"></script>
+</body>
+</html>

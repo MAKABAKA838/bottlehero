@@ -1,0 +1,6 @@
+{
+  "levelId": "level_02",
+  "bossId": "boss_octopus_02",
+  "victoryScoreBonus": 3000,
+  "goods": ["propeller", "hat"]
+}

@@ -1,0 +1,8 @@
+name = "bottlehero-demo"
+compatibility_date = "2026-06-12"
+pages_build_output_dir = "build/web-desktop"
+
+[[d1_databases]]
+binding = "BOTTLEHERO_FEEDBACK_DB"
+database_name = "bottlehero-feedback"
+database_id = "29446020-1c08-40d9-8211-b061f615726e"

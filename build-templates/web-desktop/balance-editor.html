@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bottlehero Balance Editor</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      background: #101820;
+      color: #f5fbff;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: linear-gradient(180deg, #12304a, #101820 45%, #0d151c);
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 30px;
+    }
+    p {
+      color: #b9d3df;
+      line-height: 1.55;
+    }
+    .toolbar, .card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 8px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.22);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      backdrop-filter: blur(12px);
+    }
+    button, input, select, textarea {
+      font: inherit;
+    }
+    button {
+      min-height: 42px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #4ce0a2;
+      color: #102019;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #ffd45a;
+      color: #2c2308;
+    }
+    button.ghost {
+      background: rgba(255,255,255,0.12);
+      color: #f5fbff;
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .card {
+      padding: 16px;
+    }
+    .wide {
+      grid-column: 1 / -1;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #ffe27a;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 150px 1fr 76px;
+      gap: 10px;
+      align-items: center;
+      margin: 9px 0;
+    }
+    label {
+      color: #daf2f7;
+      font-size: 13px;
+    }
+    input[type="number"], select {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 36px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.26);
+      color: #fff;
+      padding: 0 8px;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.32);
+      color: #eafdff;
+      padding: 12px;
+      resize: vertical;
+    }
+    .item-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .item-table th, .item-table td {
+      padding: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      text-align: left;
+    }
+    .item-table input, .item-table select {
+      min-height: 32px;
+    }
+    .hint {
+      font-size: 13px;
+      color: #9fc2cd;
+    }
+    .status {
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      color: #8fffc8;
+      font-weight: 800;
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Bottlehero 数值编辑器</h1>
+  <p>调好后可以保存到当前浏览器做本机调试，也可以生成短测试链接。短链接读取服务器上的短码配置；要让手机端同一个短链接同步新数值，需要把下方 JSON 更新到对应服务器配置并重新发布。</p>
+  <div class="toolbar">
+    <button id="saveLocal">保存到本机</button>
+    <button id="makeLink" class="secondary">生成短链接</button>
+    <button id="copyLink" class="ghost">复制链接</button>
+    <button id="resetDefault" class="ghost">恢复默认</button>
+    <a id="openGame" target="_blank"><button class="ghost">打开游戏</button></a>
+    <div id="status" class="status"></div>
+  </div>
+  <section id="stages" class="grid"></section>
+  <section class="grid">
+    <div class="card wide">
+      <h2>Timing Items 道具表</h2>
+      <p class="hint">奖励/惩罚平衡仍由阶段里的“奖惩倾向”控制；这里调每个道具自己的基础权重、解锁阶段和是否一次性。</p>
+      <table class="item-table">
+        <thead>
+          <tr><th>道具</th><th>类型</th><th>权重</th><th>解锁</th><th>每轮</th><th>一次性</th><th>开启</th></tr>
+        </thead>
+        <tbody id="items"></tbody>
+      </table>
+    </div>
+    <div class="card"><h2>稳定值</h2><div id="stability"></div></div>
+    <div class="card"><h2>动态难度</h2><div id="dynamic"></div></div>
+    <div class="card"><h2>Combo 奖励</h2><div id="combo"></div></div>
+    <div class="card wide">
+      <h2>测试链接</h2>
+      <textarea id="shareLink" spellcheck="false"></textarea>
+      <p class="hint">把这个短链接发给内部测试玩家。当前默认短码是 internal-test，对应服务器文件 `/balance-configs/internal-test.json`。</p>
+    </div>
+    <div class="card wide">
+      <h2>完整 JSON</h2>
+      <textarea id="jsonBox" spellcheck="false"></textarea>
+      <p class="hint">高级编辑：可以直接改 JSON。离开输入框后会尝试同步到表单。要更新短链接背后的线上数值，需要用这份 JSON 更新服务器配置。</p>
+    </div>
+  </section>
+</main>
+<script>
+const STORAGE_KEY = 'BottleHeroFiveStageBalanceConfigV1';
+const SHORT_CONFIG_ID = 'internal-test';
+const STAGES = ['newbie', 'familiar', 'skilled', 'challenge', 'hard'];
+const DEFAULT_CONFIG = {
+  stages: [
+    { id: 'newbie', labelZh: '新手轮', labelEn: 'Newbie', durationSeconds: 60, handleSpeed: 2.25, handleVariance: 0, targetCountMin: 1, targetCountMax: 1, rewardPenaltyBias: -100, trackMode: 'line', missStabilityPenalty: 8, bombStabilityPenalty: 0, dynamicAssistEnabled: false, dynamicPressureEnabled: false },
+    { id: 'familiar', labelZh: '熟悉轮', labelEn: 'Familiar', durationSeconds: 60, handleSpeed: 2.55, handleVariance: 0.08, targetCountMin: 1, targetCountMax: 2, rewardPenaltyBias: -65, trackMode: 'circle', missStabilityPenalty: 10, bombStabilityPenalty: 10, dynamicAssistEnabled: true, dynamicPressureEnabled: false },
+    { id: 'skilled', labelZh: '上手轮', labelEn: 'Skilled', durationSeconds: 60, handleSpeed: 3.05, handleVariance: 0.22, targetCountMin: 2, targetCountMax: 3, rewardPenaltyBias: -45, trackMode: 'randomBasic', missStabilityPenalty: 12, bombStabilityPenalty: 16, dynamicAssistEnabled: true, dynamicPressureEnabled: true },
+    { id: 'challenge', labelZh: '挑战轮', labelEn: 'Challenge', durationSeconds: 120, handleSpeed: 3.65, handleVariance: 0.44, targetCountMin: 2, targetCountMax: 3, rewardPenaltyBias: 0, trackMode: 'random', missStabilityPenalty: 14, bombStabilityPenalty: 22, dynamicAssistEnabled: true, dynamicPressureEnabled: true },
+    { id: 'hard', labelZh: '困难轮', labelEn: 'Hard', durationSeconds: 99999, handleSpeed: 3, handleVariance: 0.72, targetCountMin: 2, targetCountMax: 3, rewardPenaltyBias: 40, trackMode: 'random', missStabilityPenalty: 16, bombStabilityPenalty: 28, dynamicAssistEnabled: true, dynamicPressureEnabled: true }
+  ],
+  items: [
+    { id: 'star', category: 'normal', effect: 'normalHit', spriteKey: 'timingPoint', baseWeight: 1, stageUnlock: 'newbie', maxPerRound: 1, oneTimePerRun: false, enabled: true, debugLabelZh: '普通点', debugLabelEn: 'Timing Point' },
+    { id: 'food', category: 'reward', effect: 'foodBoost', spriteKey: 'timingItemFood', baseWeight: 0.3, stageUnlock: 'familiar', maxPerRound: 1, oneTimePerRun: false, enabled: true, debugLabelZh: 'RPT', debugLabelEn: 'RPT' },
+    { id: 'stability', category: 'reward', effect: 'recoverStability', spriteKey: 'timingItemStability', baseWeight: 1.25, stageUnlock: 'familiar', maxPerRound: 1, oneTimePerRun: false, enabled: true, debugLabelZh: '恢复稳定', debugLabelEn: 'Stability' },
+    { id: 'multiply', category: 'reward', effect: 'multiplyThrow', spriteKey: 'timingItemMultiply', baseWeight: 0.9, stageUnlock: 'skilled', maxPerRound: 1, oneTimePerRun: false, enabled: true, debugLabelZh: '多抛投', debugLabelEn: 'Multiply' },
+    { id: 'bomb', category: 'penalty', effect: 'bombDrop', spriteKey: 'timingItemBomb', baseWeight: 1, stageUnlock: 'challenge', maxPerRound: 1, oneTimePerRun: false, enabled: true, debugLabelZh: 'Bomb', debugLabelEn: 'Bomb' }
+  ],
+  stability: { initialStability: 100, stabilityRecoverAmount: 18, bombDropMin: 1, bombDropMax: 3, foodHandleScale: 3, foodDurationMin: 3, foodDurationMax: 8, bottleStepY: 118, towerSwayScale: 1, multiplyThrowMin: 2, multiplyThrowMax: 6, perfectRadiusScale: 1, goodRadiusScale: 1, circleTrackRadius: 196 },
+  dynamic: { enabled: true, windowSize: 10, assistMissRate: 0.45, assistStabilityBelow: 35, pressureMissRateBelow: 0.12, pressureStabilityAbove: 78, maxAssist: 35, maxPressure: 28 },
+  combo: { perfectBaseScore: 100, perfectMultiplierCap: 10, goodScore: 50, goodStabilityPenalty: 2, stabilityRewardThreshold: 3, stabilityRewardAmount: 6, invincibleThreshold: 5, invincibleDuration: 4, fullStabilityThreshold: 10, auraThreshold: 11, auraDuration: 4 }
+};
+let config = loadInitialConfig();
+function clone(value) { return JSON.parse(JSON.stringify(value)); }
+function loadInitialConfig() {
+  const params = new URLSearchParams(location.search);
+  const encoded = params.get('bhBalance') || params.get('balance');
+  if (encoded) {
+    try { return JSON.parse(decodeBalance(encoded)); } catch (error) { console.warn(error); }
+  }
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (error) { console.warn(error); }
+  return clone(DEFAULT_CONFIG);
+}
+function encodeBalance(value) {
+  const bytes = new TextEncoder().encode(JSON.stringify(value));
+  let binary = '';
+  bytes.forEach((byte) => binary += String.fromCharCode(byte));
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodeBalance(value) {
+  const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '=');
+  const binary = atob(padded);
+  const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
+function setStatus(text) {
+  document.getElementById('status').textContent = text;
+  setTimeout(() => {
+    if (document.getElementById('status').textContent === text) document.getElementById('status').textContent = '';
+  }, 2200);
+}
+function numberInput(parent, label, value, onChange, options = {}) {
+  const row = document.createElement('div');
+  row.className = 'row';
+  const name = document.createElement('label');
+  name.textContent = label;
+  const input = document.createElement('input');
+  input.type = 'range';
+  input.min = options.min ?? 0;
+  input.max = options.max ?? 100;
+  input.step = options.step ?? 1;
+  input.value = value;
+  const box = document.createElement('input');
+  box.type = 'number';
+  box.step = options.step ?? 1;
+  box.value = value;
+  const sync = (next) => {
+    const numeric = Number(next);
+    input.value = numeric;
+    box.value = numeric;
+    onChange(numeric);
+    syncJson();
+  };
+  input.addEventListener('input', () => sync(input.value));
+  box.addEventListener('change', () => sync(box.value));
+  row.append(name, input, box);
+  parent.appendChild(row);
+}
+function renderStages() {
+  const root = document.getElementById('stages');
+  root.innerHTML = '';
+  config.stages.forEach((stage, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<h2>${stage.labelZh} / ${stage.labelEn}</h2><p class="hint">奖惩倾向：负数偏奖励，0 平衡，正数偏惩罚。</p>`;
+    numberInput(card, '阶段秒数', stage.durationSeconds, (v) => stage.durationSeconds = v, { min: 15, max: index === 4 ? 99999 : 240, step: 5 });
+    numberInput(card, 'Handle速度', stage.handleSpeed, (v) => stage.handleSpeed = v, { min: 1, max: 7, step: 0.05 });
+    numberInput(card, '随机变速率', stage.handleVariance, (v) => stage.handleVariance = v, { min: 0, max: 1.5, step: 0.01 });
+    numberInput(card, 'Items最少', stage.targetCountMin, (v) => stage.targetCountMin = v, { min: 1, max: 3, step: 1 });
+    numberInput(card, 'Items最多', stage.targetCountMax, (v) => stage.targetCountMax = v, { min: 1, max: 3, step: 1 });
+    numberInput(card, '奖惩倾向', stage.rewardPenaltyBias, (v) => stage.rewardPenaltyBias = v, { min: -100, max: 100, step: 5 });
+    numberInput(card, 'Miss扣稳定', stage.missStabilityPenalty, (v) => stage.missStabilityPenalty = v, { min: 0, max: 40, step: 1 });
+    numberInput(card, 'Bomb扣稳定', stage.bombStabilityPenalty, (v) => stage.bombStabilityPenalty = v, { min: 0, max: 60, step: 1 });
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.innerHTML = '<label>轨道样式</label>';
+    const select = document.createElement('select');
+    [
+      ['line', '直线 line'],
+      ['circle', '圆圈 circle'],
+      ['triangle', '三角 triangle'],
+      ['path', '不规则 path'],
+      ['randomBasic', '随机前三种 randomBasic'],
+      ['random', '随机全部 random']
+    ].forEach(([mode, label]) => {
+      const option = document.createElement('option');
+      option.value = mode;
+      option.textContent = label;
+      select.appendChild(option);
+    });
+    select.value = stage.trackMode;
+    select.addEventListener('change', () => { stage.trackMode = select.value; syncJson(); });
+    row.append(select, document.createElement('span'));
+    card.appendChild(row);
+    root.appendChild(card);
+  });
+}
+function renderItems() {
+  const root = document.getElementById('items');
+  root.innerHTML = '';
+  config.items.forEach((item) => {
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${item.debugLabelZh || item.id}<br><span class="hint">${item.id}</span></td><td>${item.category}</td>`;
+    const weight = document.createElement('input');
+    weight.type = 'number';
+    weight.step = '0.05';
+    weight.value = item.baseWeight;
+    weight.addEventListener('change', () => { item.baseWeight = Number(weight.value); syncJson(); });
+    const unlock = document.createElement('select');
+    STAGES.forEach((stage) => {
+      const option = document.createElement('option');
+      option.value = stage;
+      option.textContent = stage;
+      unlock.appendChild(option);
+    });
+    unlock.value = item.stageUnlock;
+    unlock.addEventListener('change', () => { item.stageUnlock = unlock.value; syncJson(); });
+    const max = document.createElement('input');
+    max.type = 'number';
+    max.min = '1';
+    max.max = '3';
+    max.value = item.maxPerRound;
+    max.addEventListener('change', () => { item.maxPerRound = Number(max.value); syncJson(); });
+    const oneTime = document.createElement('input');
+    oneTime.type = 'checkbox';
+    oneTime.checked = item.oneTimePerRun;
+    oneTime.addEventListener('change', () => { item.oneTimePerRun = oneTime.checked; syncJson(); });
+    const enabled = document.createElement('input');
+    enabled.type = 'checkbox';
+    enabled.checked = item.enabled;
+    enabled.addEventListener('change', () => { item.enabled = enabled.checked; syncJson(); });
+    [weight, unlock, max, oneTime, enabled].forEach((control) => {
+      const td = document.createElement('td');
+      td.appendChild(control);
+      row.appendChild(td);
+    });
+    root.appendChild(row);
+  });
+}
+function renderObject(id, object) {
+  const root = document.getElementById(id);
+  root.innerHTML = '';
+  Object.keys(object).forEach((key) => {
+    const value = object[key];
+    if (typeof value === 'boolean') {
+      const row = document.createElement('div');
+      row.className = 'row';
+      const label = document.createElement('label');
+      label.textContent = key;
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = value;
+      input.addEventListener('change', () => { object[key] = input.checked; syncJson(); });
+      row.append(label, input, document.createElement('span'));
+      root.appendChild(row);
+      return;
+    }
+    numberInput(root, key, value, (next) => object[key] = next, { min: 0, max: Math.max(10, Number(value) * 3, 120), step: Number(value) % 1 ? 0.01 : 1 });
+  });
+}
+function syncJson() {
+  document.getElementById('jsonBox').value = JSON.stringify(config, null, 2);
+  updateLink();
+}
+function updateLink() {
+  const path = location.pathname.replace(/\/?balance-editor(?:\.html)?$/, '/');
+  const gameUrl = `${location.origin}${path}?cfg=${encodeURIComponent(SHORT_CONFIG_ID)}&v=balance-${Date.now()}`;
+  document.getElementById('shareLink').value = gameUrl;
+  document.getElementById('openGame').href = gameUrl;
+}
+function renderAll() {
+  renderStages();
+  renderItems();
+  renderObject('stability', config.stability);
+  renderObject('dynamic', config.dynamic);
+  renderObject('combo', config.combo);
+  syncJson();
+}
+document.getElementById('saveLocal').addEventListener('click', () => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+  setStatus('保存成功');
+});
+document.getElementById('makeLink').addEventListener('click', () => {
+  updateLink();
+  setStatus('测试链接已生成');
+});
+document.getElementById('copyLink').addEventListener('click', async () => {
+  updateLink();
+  await navigator.clipboard.writeText(document.getElementById('shareLink').value);
+  setStatus('链接已复制');
+});
+document.getElementById('resetDefault').addEventListener('click', () => {
+  config = clone(DEFAULT_CONFIG);
+  renderAll();
+  setStatus('已恢复默认');
+});
+document.getElementById('jsonBox').addEventListener('blur', () => {
+  try {
+    config = JSON.parse(document.getElementById('jsonBox').value);
+    renderAll();
+    setStatus('JSON 已同步');
+  } catch (error) {
+    setStatus('JSON 格式错误');
+  }
+});
+renderAll();
+</script>
+</body>
+</html>

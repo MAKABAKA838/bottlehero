@@ -1,0 +1,26 @@
+{
+  "id": "boss_alien_01",
+  "labelZh": "外星入侵者",
+  "labelEn": "Alien Invader",
+  "minionSpriteKeys": ["ambientAlien01", "ambientAlien02"],
+  "balance": {
+    "enabled": true,
+    "triggerScore": 55000,
+    "maxHp": 2600,
+    "warningSeconds": 2.8,
+    "normalAttackDamage": 40,
+    "goodAttackDamage": 68,
+    "rareAttackDamage": 118,
+    "treasureAttackDamage": 200,
+    "comboSkillDurationMin": 3,
+    "comboSkillDurationMax": 8,
+    "frozenSkillDurationMin": 3,
+    "frozenSkillDurationMax": 6.5,
+    "bossAttackInterval": 2.8,
+    "minionSpawnInterval": 6,
+    "bulletStabilityDamage": 2.5,
+    "maxMinions": 2,
+    "minionHp": 130,
+    "displayScale": 2
+  }
+}
