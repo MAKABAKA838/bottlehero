@@ -1,6 +1,0 @@
-{
-  "levelId": "level_03",
-  "bossId": "boss_alien_03",
-  "victoryScoreBonus": 3500,
-  "goods": ["horns", "hat"]
-}
