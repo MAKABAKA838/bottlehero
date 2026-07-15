@@ -1,5 +1,5 @@
 /* Bottlehero static cache — version replaced at deploy sync time. */
-const CACHE_VERSION = '20260715062146';
+const CACHE_VERSION = '20260715094951';
 const CACHE_NAME = `bottlehero-static-${CACHE_VERSION}`;
 
 function isApiRequest(url) {
