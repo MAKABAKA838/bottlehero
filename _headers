@@ -1,5 +1,5 @@
-# Cloudflare Pages：静态资源长缓存，HTML/API 不长期缓存
-# 构建后由 tools/sync-pages-deploy-files.js 复制到 build/web-desktop/
+# Cloudflare Pages：媒体长缓存；HTML/JS/配置不长期缓存（Cocos 常用固定文件名）
+# 构建后由 tools/sync-pages-deploy-files.js 复制到 build/
 
 /api/*
   Cache-Control: no-store
@@ -13,14 +13,26 @@
 /src/settings.json
   Cache-Control: no-cache
 
+/src/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/*/index.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/*/config.json
+  Cache-Control: public, max-age=0, must-revalidate
+
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-/src/*
-  Cache-Control: public, max-age=31536000, immutable
-
 /*.wasm
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/*.json
+  Cache-Control: public, max-age=0, must-revalidate
 
 /*.png
   Cache-Control: public, max-age=31536000, immutable
@@ -37,13 +49,7 @@
 /*.m4a
   Cache-Control: public, max-age=31536000, immutable
 
-/*.js
-  Cache-Control: public, max-age=31536000, immutable
-
 /*.css
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.json
   Cache-Control: public, max-age=86400
 
 /*
