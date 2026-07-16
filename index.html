@@ -65,26 +65,32 @@
 (function () {
   if (!('serviceWorker' in navigator)) return;
   var params = new URLSearchParams(location.search);
-  var bust = params.has('bhBust') || params.has('v');
+  if (params.has('bhBust')) {
+    var clearing = Promise.all([
+      navigator.serviceWorker.getRegistrations().then(function (regs) {
+        return Promise.all(regs.map(function (r) { return r.unregister(); }));
+      }),
+      caches.keys().then(function (keys) {
+        return Promise.all(keys.filter(function (k) {
+          return k.indexOf('bottlehero-static-') === 0;
+        }).map(function (k) { return caches.delete(k); }));
+      }),
+    ]);
+    clearing.then(function () {
+      params.delete('bhBust');
+      var q = params.toString();
+      location.replace(location.pathname + (q ? '?' + q : '') + location.hash);
+    }).catch(function () {
+      location.replace(location.pathname + location.search.replace(/[?&]bhBust=1/, '').replace(/^&/, '?') + location.hash);
+    });
+    return;
+  }
   window.addEventListener('load', function () {
-    var ready = bust
-      ? navigator.serviceWorker.getRegistrations().then(function (regs) {
-          return Promise.all(regs.map(function (r) { return r.unregister(); }));
-        })
-      : Promise.resolve();
-    ready.then(function () {
-      return navigator.serviceWorker.register('./sw.js?v=' + Date.now());
-    }).then(function (reg) {
+    navigator.serviceWorker.register('./sw.js').then(function (reg) {
       if (reg && typeof reg.update === 'function') {
         reg.update();
       }
     }).catch(function () {});
-  });
-  var refreshing = false;
-  navigator.serviceWorker.addEventListener('controllerchange', function () {
-    if (refreshing) return;
-    refreshing = true;
-    location.reload();
   });
 })();
 </script>
