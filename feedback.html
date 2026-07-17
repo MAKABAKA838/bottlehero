@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bottlehero 试玩反馈</title>
+  <link rel="stylesheet" href="./feedback.css">
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <h1>Bottlehero 试玩反馈</h1>
+      <p>这份问卷只用于内部研发判断，约 1 分钟完成。不会收集姓名、手机号或微信号。</p>
+      <div class="progress" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <div id="statusTop" class="status top-status" role="status"></div>
+    </section>
+
+    <form id="feedbackForm" class="panel" novalidate>
+      <section class="question">
+        <h2>1. 你觉得这个试玩版本好玩吗？</h2>
+        <div class="options">
+          <label class="choice"><input required type="radio" name="funRating" value="very_fun">非常好玩</label>
+          <label class="choice"><input type="radio" name="funRating" value="fun">比较好玩</label>
+          <label class="choice"><input type="radio" name="funRating" value="average">一般</label>
+          <label class="choice"><input type="radio" name="funRating" value="boring">有点无聊</label>
+          <label class="choice"><input type="radio" name="funRating" value="very_boring">很无聊</label>
+        </div>
+      </section>
+
+      <section class="question">
+        <h2>2. 你愿意再玩一局吗？</h2>
+        <div class="options compact">
+          <label class="choice"><input required type="radio" name="replayIntent" value="yes">愿意</label>
+          <label class="choice"><input type="radio" name="replayIntent" value="maybe">可能会</label>
+          <label class="choice"><input type="radio" name="replayIntent" value="no">不太愿意</label>
+        </div>
+      </section>
+
+      <section class="question">
+        <h2>3. 你最喜欢哪部分？最多选 2 个</h2>
+        <div class="options">
+          <label class="choice"><input type="checkbox" name="favoriteParts" value="timing">轨迹判定</label>
+          <label class="choice"><input type="checkbox" name="favoriteParts" value="tower">道具塔成长</label>
+          <label class="choice"><input type="checkbox" name="favoriteParts" value="boss">最终怪物战</label>
+          <label class="choice"><input type="checkbox" name="favoriteParts" value="avatar">宠物装扮</label>
+          <label class="choice"><input type="checkbox" name="favoriteParts" value="art">画面风格</label>
+          <label class="choice"><input type="checkbox" name="favoriteParts" value="score">分数挑战</label>
+          <label class="choice"><input type="checkbox" name="favoriteParts" value="none">没有特别喜欢</label>
+        </div>
+      </section>
+
+      <section class="question">
+        <h2>4. 你觉得最需要优化哪里？最多选 2 个</h2>
+        <div class="options">
+          <label class="choice"><input type="checkbox" name="painPoints" value="too_hard">太难</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="too_easy">太简单</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="unclear">不知道怎么玩</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="loading">加载太慢</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="controls">操作不舒服</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="boss_bad">最终怪物战不好玩</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="art_bad">画面不喜欢</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="weak_goal">目标感不强</label>
+          <label class="choice"><input type="checkbox" name="painPoints" value="boring">整体无聊</label>
+        </div>
+      </section>
+
+      <section class="question">
+        <h2>5. 简单了解一下你</h2>
+        <p>只用于研发分析，不记录真实身份。</p>
+        <div class="options compact">
+          <label class="choice"><input required type="radio" name="gender" value="male">男</label>
+          <label class="choice"><input type="radio" name="gender" value="female">女</label>
+          <label class="choice"><input type="radio" name="gender" value="prefer_not">不方便说</label>
+        </div>
+        <div class="options">
+          <label class="choice"><input required type="radio" name="userSegment" value="primary">小学生</label>
+          <label class="choice"><input type="radio" name="userSegment" value="middle">初中生</label>
+          <label class="choice"><input type="radio" name="userSegment" value="high">高中生</label>
+          <label class="choice"><input type="radio" name="userSegment" value="college">大学生</label>
+          <label class="choice"><input type="radio" name="userSegment" value="worker">上班族</label>
+          <label class="choice"><input type="radio" name="userSegment" value="parent_other">家长或其他</label>
+        </div>
+      </section>
+
+      <section class="question">
+        <h2>6. 你平时玩小游戏频率？</h2>
+        <div class="options">
+          <label class="choice"><input required type="radio" name="gameFrequency" value="rare">几乎不玩</label>
+          <label class="choice"><input type="radio" name="gameFrequency" value="sometimes">偶尔玩</label>
+          <label class="choice"><input type="radio" name="gameFrequency" value="weekly">每周会玩</label>
+          <label class="choice"><input type="radio" name="gameFrequency" value="daily">经常玩</label>
+        </div>
+      </section>
+
+      <section class="question">
+        <h2>7. 你更喜欢哪种画面风格？</h2>
+        <p>请选择最喜欢的一张。</p>
+        <div class="art-grid">
+          <label class="art-card"><input required type="radio" name="artFavoriteId" value="style_01"><img src="./feedback-assets/artstyle_1.jpg" alt="画面风格1"><span>风格 1</span></label>
+          <label class="art-card"><input type="radio" name="artFavoriteId" value="style_02"><img src="./feedback-assets/artstyle_2.jpg" alt="画面风格2"><span>风格 2</span></label>
+          <label class="art-card"><input type="radio" name="artFavoriteId" value="style_03"><img src="./feedback-assets/artstyle_3.jpg" alt="画面风格3"><span>风格 3</span></label>
+          <label class="art-card"><input type="radio" name="artFavoriteId" value="style_04"><img src="./feedback-assets/artstyle_4.jpg" alt="画面风格4"><span>风格 4</span></label>
+          <label class="art-card"><input type="radio" name="artFavoriteId" value="style_05"><img src="./feedback-assets/artstyle_5.jpg" alt="画面风格5"><span>风格 5</span></label>
+        </div>
+      </section>
+
+      <section class="question">
+        <h2>8. 有没有一句话建议？</h2>
+        <textarea name="comment" maxlength="240" placeholder="比如：哪里最好玩、哪里不舒服、希望增加什么"></textarea>
+      </section>
+
+      <div class="actions">
+        <button id="submitButton" type="submit">提交反馈</button>
+        <a class="link-button secondary" href="./">返回游戏</a>
+      </div>
+      <div id="status" class="status" role="status"></div>
+    </form>
+  </main>
+  <div id="successOverlay" class="success-overlay" aria-hidden="true">
+    <div class="success-card">
+      <h2>提交成功</h2>
+      <p>谢谢你的反馈，数据已经记录到内部统计后台。</p>
+      <div class="success-actions">
+        <button id="nextFeedbackButton" type="button">继续填写下一份</button>
+        <a class="link-button secondary" href="./">返回游戏</a>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="./feedback.js"></script>
+</body>
+</html>
